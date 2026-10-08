@@ -1,0 +1,445 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Joy Salon - Manajemen Reservasi</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: #71a0e6;
+            color: #333;
+            display: flex;
+            min-height: 100vh;
+        }
+
+               .sidebar {
+            width: 250px;
+            background-color: #3896d4;
+            color: #94d6ee;
+            display: flex;
+            flex-direction: column;
+            position: fixed;
+            height: 100vh;
+            overflow-y: auto;
+        }
+
+        .sidebar-header {
+            padding: 25px 20px 15px 20px;
+            font-size: 20px;
+            font-weight: bold;
+            color: #fff;
+        }
+
+        .sidebar-header span {
+            display: block;
+            font-size: 13px;
+            font-weight: normal;
+            color: #b0a0c0;
+            margin-top: 4px;
+        }
+
+        .sidebar-menu {
+            list-style: none;
+            padding: 10px 0;
+            flex-grow: 1;
+        }
+
+        .sidebar-menu li {
+            padding: 12px 20px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            font-size: 14px;
+            color: #d1c4e0;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .sidebar-menu li:hover {
+            background-color: #3896d4;
+        }
+
+        .sidebar-menu li.active {
+            background-color: #3896d4;
+            color: #fff;
+            border-left: 4px solid #fff;
+        }
+
+        .sidebar-menu li svg {
+            width: 18px;
+            height: 18px;
+            fill: currentColor; 
+            flex-shrink: 0;
+        }
+
+        .sidebar-menu .logout-item {
+            margin-top: auto;
+            border-top: 1px solid #3896d4;
+            padding-top: 15px;
+            padding-bottom: 20px;
+        }
+
+        .main-content {
+            margin-left: 250px;
+            flex: 1;
+            padding: 30px;
+            background-color: white;
+        }
+
+        .page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+        }
+
+        .page-header h1 {
+            font-size: 24px;
+            color: #3896d4;
+        }
+
+        .page-header p {
+            font-size: 13px;
+            color: #777;
+            margin-top: 5px;
+        }
+
+        .btn-tambah {
+            background-color: #3896d4;
+            color: #fff;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 6px;
+            font-size: 14px;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .btn-tambah:hover {
+            background-color: #3896d4;
+        }
+
+        .filter-section {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 20px;
+            background: #fff;
+            padding: 15px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+
+        .search-box {
+            flex: 1;
+            position: relative;
+        }
+
+        .search-box input {
+            width: 100%;
+            padding: 10px 15px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            font-size: 14px;
+            outline: none;
+        }
+
+        .search-box input:focus {
+            border-color: #3896d4;
+        }
+
+        .filter-date input, .filter-status select {
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            font-size: 14px;
+            outline: none;
+            background-color: #fff;
+            cursor: pointer;
+        }
+
+        .table-container {
+            background: #fff;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            overflow: hidden;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            text-align: left;
+        }
+
+        thead {
+            background-color: #f9f9f9;
+            border-bottom: 2px solid #eee;
+        }
+
+        th {
+            padding: 15px;
+            font-size: 13px;
+            font-weight: 600;
+            color: #555;
+            text-transform: uppercase;
+        }
+
+        td {
+            padding: 15px;
+            font-size: 14px;
+            color: #333;
+            border-bottom: 1px solid #eee;
+            vertical-align: middle;
+        }
+
+        tbody tr:hover {
+            background-color: #3896d4;
+        }
+
+                .badge {
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 500;
+            display: inline-block;
+        }
+
+        .badge-menunggu {
+            background-color: #fff3cd;
+            color: #856404;
+            border: 1px solid #ffeeba;
+        }
+
+        .badge-dikonfirmasi {
+            background-color: #fff3cd;
+            color: #856404;
+            border: 1px solid #ffeeba;
+        }
+
+        .badge-selesai {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .badge-ditolak {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 8px;
+        }
+
+        .btn-action {
+            background: none;
+            border: none;
+            font-size: 13px;
+            cursor: pointer;
+            padding: 0;
+            color: #555;
+            text-decoration: none;
+            font-family: inherit;
+        }
+
+        .btn-action:hover {
+            color: #383838; 
+        }
+
+        @media (max-width: 768px) {
+            .sidebar {
+                width: 60px;
+            }
+            .sidebar-header, .sidebar-menu li span {
+                display: none;
+            }
+            .sidebar-menu li {
+                justify-content: center;
+                padding: 15px 0;
+            }
+            .main-content {
+                margin-left: 60px;
+                padding: 15px;
+            }
+            .filter-section {
+                flex-direction: column;
+            }
+            .table-container {
+                overflow-x: auto;
+            }
+            table {
+                min-width: 800px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <aside class="sidebar">
+        <div class="sidebar-header">
+            Jel Salon
+            <span>Admin</span>
+        </div>
+        <ul class="sidebar-menu">
+            <li>
+                <svg viewBox="0 0 24 24"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>
+                <span>Beranda</span>
+            </li>
+            <li class="active">
+                <svg viewBox="0 0 24 24"><path d="M19 3h-1V1h-2v2H8V1H6v2H5c-1.11 0-1.99.9-1.99 2L3 19c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V8h14v11zM7 10h5v5H7z"/></svg>
+                <span>Reservasi</span>
+            </li>
+            <li>
+                <svg viewBox="0 0 24 24"><path d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8zm.5-13H11v6l5.25 3.15.75-1.23-4.5-2.67z"/></svg>
+                <span>Transaksi</span>
+            </li>
+            <li>
+                <svg viewBox="0 0 24 24"><path d="M9.64 7.64c.23-.5.36-1.05.36-1.64 0-2.21-1.79-4-4-4S2 3.79 2 6s1.79 4 4 4c.59 0 1.14-.13 1.64-.36L10 12l-2.36 2.36C7.14 14.13 6.59 14 6 14c-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4c0-.59-.13-1.14-.36-1.64L12 14l7 7h3v-1L9.64 7.64zM6 8c-1.1 0-2-.89-2-2s.9-2 2-2 2 .89 2 2-.9 2-2 2zm0 12c-1.1 0-2-.89-2-2s.9-2 2-2 2 .89 2 2-.9 2-2 2zm6-7.5c-.28 0-.5-.22-.5-.5s.22-.5.5-.5.5.22.5.5-.22.5-.5.5zM19 3l-6 6 2 2 7-7V3h-3z"/></svg>
+                <span>Treatment</span>
+            </li>
+            <li>
+                <svg viewBox="0 0 24 24"><path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z"/></svg>
+                <span>Pelanggan</span>
+            </li>
+            <li>
+                <svg viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
+                <span>Karyawan</span>
+            </li>
+            <li>
+                <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 3c1.66 0 3 1.34 3 3s-1.34 3-3 3-3-1.34-3-3 1.34-3 3-3zm0 14.2c-2.5 0-4.71-1.28-6-3.22.03-1.99 4-3.08 6-3.08 1.99 0 5.97 1.09 6 3.08-1.29 1.94-3.5 3.22-6 3.22z"/></svg>
+                <span>Pengguna</span>
+            </li>
+            <li>
+                <svg viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zM9 17H7v-7h2v7zm4 0h-2V7h2v10zm4 0h-2v-4h2v4z"/></svg>
+                <span>Laporan</span>
+            </li>
+            <li class="logout-item">
+                <svg viewBox="0 0 24 24"><path d="M17 7l-1.41 1.41L18.17 11H8v2h10.17l-2.58 2.58L17 17l5-5zM4 5h8V3H4c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h8v-2H4V5z"/></svg>
+                <span>Keluar</span>
+            </li>
+        </ul>
+    </aside>
+
+    <main class="main-content">
+        
+        <header class="page-header">
+            <div>
+                <h1>Reservasi</h1>
+                <p>kamis, 08 Oktober 2026 · 14 jadwal</p>
+            </div>
+            <button class="btn-tambah">Tambah reservasi</button>
+        </header>
+
+        <section class="filter-section">
+            <div class="search-box">
+                <input type="text" placeholder="Cari nama pelanggan atau nomor HP...">
+            </div>
+            <div class="filter-date">
+                <input type="date" value="2026-09-18">
+            </div>
+            <div class="filter-status">
+                <select>
+                    <option value="">Semua status</option>
+                    <option value="menunggu">menunggu</option>
+                    <option value="dikonfirmasi">dikonfirmasi</option>
+                    <option value="selesai">selesai</option>
+                    <option value="ditolak">ditolak</option>
+                </select>
+            </div>
+        </section>
+
+        <section class="table-container">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Kode</th>
+                        <th>Pelanggan</th>
+                        <th>Treatment</th>
+                        <th>Jam</th>
+                        <th>Karyawan</th>
+                        <th>Status</th>
+                        <th>Aksi</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>RS-1043</td>
+                        <td>jella</td>
+                        <td>smoothing</td>
+                        <td>15.00</td>
+                        <td>rina</td>
+                        <td><span class="badge badge-menunggu">menunggu</span></td>
+                        <td>
+                            <div class="action-buttons">
+                                <button class="btn-action konfirmasi">konfirmasi-tolak</button>
+                                                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>RS-1042</td>
+                        <td>jelvia</td>
+                        <td>potong pria</td>
+                        <td>13.00</td>
+                        <td>bagas</td>
+                        <td><span class="badge badge-dikonfirmasi">dikonfirmasi</span></td>
+                        <td>
+                            <div class="action-buttons">
+                                <button class="btn-action ubah">ubah-selesai</button>
+                                                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>RS-1041</td>
+                        <td>agnesia</td>
+                        <td>creambath + potong</td>
+                        <td>11.30</td>
+                        <td>tika</td>
+                        <td><span class="badge badge-selesai">selesai</span></td>
+                        <td>
+                            <div class="action-buttons">
+                                <button class="btn-action">lihat</button>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>RS-1040</td>
+                        <td>yunita</td>
+                        <td>hair spa</td>
+                        <td>10.00</td>
+                        <td>rina</td>
+                        <td><span class="badge badge-selesai">selesai</span></td>
+                        <td>
+                            <div class="action-buttons">
+                                <button class="btn-action">lihat</button>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>RS-1039</td>
+                        <td>anty</td>
+                        <td>facial dasar</td>
+                        <td>16.30</td>
+                        <td>—</td>
+                        <td><span class="badge badge-ditolak">ditolak</span></td>
+                        <td>
+                            <div class="action-buttons">
+                                <button class="btn-action">lihat</button>
+                            </div>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+    </main>
+
+</body>
+</html>
